@@ -2,6 +2,14 @@ import { GenderizeResponse, TransformedGenderizeResponse } from "@/types/genderi
 import { ApiError, NoPredictionError } from "@/errors/ExternalApiErrors";
 
 
+/**
+ * Fetches gender prediction for a given name from the Genderize.io API.
+ * 
+ * @param name - The name to classify.
+ * @returns A promise that resolves to a transformed gender prediction object.
+ * @throws {NoPredictionError} If the API returns no prediction for the name.
+ * @throws {ApiError} If the external API request fails, times out, or returns an error status.
+ */
 export const getGenderFromName = async (name: string): Promise<TransformedGenderizeResponse> => {
   const GENDERIZE_API_TIMEOUT_MS = 5000; // 5-second timeout
 

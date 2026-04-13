@@ -5,6 +5,7 @@ import { errorHandler } from '@/middleware/errorHandler';
 import { validateNameParam } from '@/middleware/validateNameParams';
 import { getGenderFromName } from '@/services/genderiseService';
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -13,16 +14,24 @@ const PORT = process.env.PORT || 3000;
 // Apply CORS middleware before all route handlers
 app.use(cors({ origin: '*' }));
 
-// Health check route
+/**
+ * Root health check route.
+ */
 app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+/**
+ * Dedicated health check route.
+ */
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// API Routes
+/**
+ * Name classification endpoint.
+ * Validates 'name' query parameter and fetches gender prediction.
+ */
 app.get('/api/classify', validateNameParam, async (req, res, next) => {
   try {
     const name = req.query.name as string;
