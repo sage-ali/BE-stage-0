@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: hng-14-be-stage-0
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: NODE_VERSION
+        value: "20.x" # Matching a recommended Node.js version
