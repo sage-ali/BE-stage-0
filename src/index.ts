@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
+
+// Register the global error handling middleware
+app.use(errorHandler);
 
 // Start the server
 app.listen(PORT, () => {
