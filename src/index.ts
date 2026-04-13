@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler } from '@/middleware/errorHandler';
+import { validateNameParam } from '@/middleware/validateNameParams';
+import { getGenderFromName } from '@/services/genderiseService';
 
 dotenv.config();
 
@@ -18,6 +20,17 @@ app.get('/', (req, res) => {
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
+});
+
+// API Routes
+app.get('/api/classify', validateNameParam, async (req, res, next) => {
+  try {
+    const name = req.query.name as string;
+    const genderizeResult = await getGenderFromName(name);
+    res.status(200).json({ status: 'success', data: genderizeResult });
+  } catch (error) {
+    next(error); // Pass errors to the global error handler
+  }
 });
 
 // Register the global error handling middleware
