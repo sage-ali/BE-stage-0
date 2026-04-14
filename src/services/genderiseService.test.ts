@@ -1,11 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getGenderFromName } from '@/services/genderiseService';
 import { ApiError, NoPredictionError } from '@/errors/ExternalApiErrors';
+import { fetch } from 'undici';
+
+vi.mock('undici', () => ({
+  fetch: vi.fn(),
+  ProxyAgent: vi.fn(),
+}));
 
 describe('genderiseService', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.stubGlobal('fetch', vi.fn());
   });
 
   it('should return transformed response for high confidence result', async () => {

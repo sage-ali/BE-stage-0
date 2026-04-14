@@ -1,10 +1,10 @@
 import { GenderizeResponse, TransformedGenderizeResponse } from "@/types/genderise.types";
 import { ApiError, NoPredictionError } from "@/errors/ExternalApiErrors";
-
+import { fetch as nodeFetch, ProxyAgent } from "undici"; // <-- Import undici
 
 /**
  * Fetches gender prediction for a given name from the Genderize.io API.
- * 
+ *
  * @param name - The name to classify.
  * @returns A promise that resolves to a transformed gender prediction object.
  * @throws {NoPredictionError} If the API returns no prediction for the name.
@@ -20,7 +20,15 @@ export const getGenderFromName = async (name: string): Promise<TransformedGender
   const timeoutId = setTimeout(() => abortController.abort(), GENDERIZE_API_TIMEOUT_MS);
 
   try {
-    const response = await fetch(url.toString(), { signal: abortController.signal });
+    const fetchOptions: any = { signal: abortController.signal };
+
+    if (process.env.FIXIE_URL) {
+      fetchOptions.dispatcher = new ProxyAgent(process.env.FIXIE_URL);
+    }
+
+
+    const response = await nodeFetch(url.toString(), fetchOptions);
+
     clearTimeout(timeoutId);
 
     if (!response.ok) {
@@ -30,7 +38,7 @@ export const getGenderFromName = async (name: string): Promise<TransformedGender
       throw new ApiError('Genderize API returned non-OK status', 502);
     }
 
-    const data: GenderizeResponse = await response.json();
+    const data = await response.json() as GenderizeResponse;
 
     // Check for inconclusive prediction BEFORE transformations
     if (data.gender === null || data.count === 0) {
